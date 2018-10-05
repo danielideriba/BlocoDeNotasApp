@@ -1,7 +1,9 @@
 package com.example.logonrmlocal.blocodenotasapp.view.main
 
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.opengl.Visibility
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -17,13 +19,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.loading.*
 import android.support.v4.widget.SwipeRefreshLayout
-
+import android.widget.Toast
+import com.example.logonrmlocal.blocodenotasapp.view.main.form.FormularioActivity
 
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var mainViewModel: MainViewModel
     private var adapter: MainListAdapter? = null
+
+    val REQUEST_CODE = 5
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +44,8 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.buscarTodos()
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+           val formularioIntent = Intent(this, FormularioActivity::class.java)
+           startActivityForResult(formularioIntent, REQUEST_CODE)
         }
     }
 
@@ -76,6 +81,20 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            REQUEST_CODE -> {
+                when(resultCode){
+                    Activity.RESULT_OK -> { mainViewModel.buscarTodos() }
+                    Activity.RESULT_CANCELED -> {
+                        Toast.makeText(this, "Cancelou", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
     }
 }
